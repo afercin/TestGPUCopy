@@ -31,19 +31,22 @@ namespace TestGPUCopy
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            byte[] data = ImageToBytes(Image.FromFile(@"D:/prueba.png"));
+            var image = new BitmapImage(new Uri("pack://application:,,,/Image/TestImg.png"));
+            byte[] data = ImageToBytes(image);
             byte[] copy = new byte[data.Length];
 
             gpu.GPUCopy(data, 0, copy, 0, data.Length);
 
             Img.Source = BytesToScreenImage(copy);
         }
-        public static byte[] ImageToBytes(Image img)
+        public static byte[] ImageToBytes(BitmapImage img)
         {
             byte[] data;
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(img));
             using (MemoryStream ms = new MemoryStream())
             {
-                img.Save(ms, ImageFormat.Jpeg);
+                encoder.Save(ms);
                 data = ms.ToArray();
             }
             return data;
